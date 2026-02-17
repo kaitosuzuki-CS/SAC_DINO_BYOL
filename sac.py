@@ -224,7 +224,6 @@ class SAC_DINO:
         self.actor = self.actor.to(device)
         self.critic1 = self.critic1.to(device)
         self.critic2 = self.critic2.to(device)
-
         self.target_encoder = self.target_encoder.to(device)
         self.target_projection = self.target_projection.to(device)
         self.target_critic1 = self.target_critic1.to(device)
