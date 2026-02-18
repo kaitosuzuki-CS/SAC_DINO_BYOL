@@ -49,6 +49,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+    alg = args.alg
     domain_name = args.domain_name.lower()
     task_name = args.task_name.lower()
     model_config_path = args.model_config_path
@@ -66,6 +67,10 @@ if __name__ == "__main__":
         train_hps.frame_stack,  # type:ignore
         train_hps.image_size,  # type:ignore
     )
-    # sac = SAC_DINO(env, hps, train_hps, device)
-    sac = SAC_BYOL(env, hps, train_hps, device)
+
+    if alg == "dino":
+        sac = SAC_DINO(env, hps, train_hps, device)
+    elif alg == "byol":
+        sac = SAC_BYOL(env, hps, train_hps, device)
+
     sac.train()
