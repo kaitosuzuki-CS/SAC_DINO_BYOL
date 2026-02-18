@@ -4,7 +4,8 @@ from pathlib import Path
 import torch
 import yaml
 
-from sac import SAC_DINO
+from sac_byol import SAC_BYOL
+from sac_dino import SAC_DINO
 from utils.env import create_environment
 from utils.misc import load_config, set_seeds
 
@@ -12,7 +13,16 @@ parent_dir = Path(__file__).resolve().parent
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Arguments for SAC_DINO training")
+    parser = argparse.ArgumentParser(
+        description="Arguments for SAC_DINO and SAC_BYOL training"
+    )
+    parser.add_argument(
+        "--alg",
+        type=str,
+        choices=["dino", "byol"],
+        default="dino",
+        help="Training algorithm (SAC_DINO or SAC_BYOL)",
+    )
     parser.add_argument(
         "--domain-name",
         type=str,
@@ -52,8 +62,10 @@ if __name__ == "__main__":
         domain_name,
         task_name,
         train_hps.action_repeat,  # type:ignore
+        train_hps.horizon,  # type:ignore
         train_hps.frame_stack,  # type:ignore
         train_hps.image_size,  # type:ignore
     )
-    sac = SAC_DINO(env, hps, train_hps, device)
+    # sac = SAC_DINO(env, hps, train_hps, device)
+    sac = SAC_BYOL(env, hps, train_hps, device)
     sac.train()

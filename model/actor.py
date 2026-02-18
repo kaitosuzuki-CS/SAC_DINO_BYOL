@@ -28,9 +28,7 @@ class Actor(nn.Module):
                 nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        with torch.no_grad():
-            out = self.encoder(x)
-
+        out = self.encoder(x).detach()
         out = self.mlp(out)
 
         mu, logvar = out.chunk(2, dim=-1)

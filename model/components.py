@@ -66,9 +66,9 @@ class ProjectionHead(nn.Module):
         return out
 
 
-class Encoder(nn.Module):
+class EncoderDINO(nn.Module):
     def __init__(self, obs_shape, embed_dim, hps):
-        super(Encoder, self).__init__()
+        super(EncoderDINO, self).__init__()
 
         self._obs_shape = obs_shape
         self._embed_dim = embed_dim
@@ -116,6 +116,62 @@ class Encoder(nn.Module):
             out = layer(out)
 
         out = out.mean(dim=(-2, -1))
+        out = self.mlp(out)
+        out = self.output_layer(out)
+
+        return out
+
+
+class EncoderBYOL(nn.Module):
+    def __init__(self, obs_shape, embed_dim, hps):
+        super(EncoderBYOL, self).__init__()
+
+        self._obs_shape = obs_shape
+        self._embed_dim = embed_dim
+        self._hps = hps
+
+        C, H, W = obs_shape
+        self.in_conv = nn.Conv2d(C, hps.latent_dim, kernel_size=3, stride=2, padding=1)
+        self.act = nn.ReLU()
+
+        self.layers = nn.ModuleList(
+            [
+                nn.Sequential(
+                    nn.Conv2d(
+                        hps.latent_dim,
+                        hps.latent_dim,
+                        kernel_size=3,
+                        stride=1,
+                        padding=1,
+                    ),
+                    nn.ReLU(),
+                )
+                for _ in range(hps.num_layers - 1)
+            ]
+        )
+
+        self.mlp = MLP(hps.latent_dim * (H // 2) * (W // 2), hps.hidden_dim, embed_dim)
+        self.output_layer = nn.Sequential(nn.LayerNorm(embed_dim), nn.Tanh())
+
+    def init_weights(self):
+        for m in self.modules():
+            if isinstance(m, (nn.Conv2d, nn.Linear)):
+                nn.init.kaiming_normal_(m.weight, mode="fan_in", nonlinearity="relu")
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
+
+            if isinstance(m, nn.LayerNorm):
+                nn.init.ones_(m.weight)
+                nn.init.zeros_(m.bias)
+
+    def forward(self, x):
+        out = self.in_conv(x)
+        out = self.act(out)
+
+        for layer in self.layers:
+            out = layer(out)
+
+        out = torch.flatten(out, start_dim=1)
         out = self.mlp(out)
         out = self.output_layer(out)
 

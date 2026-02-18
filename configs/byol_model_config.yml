@@ -1,0 +1,11 @@
+obs_shape: [9, 100, 100]
+crop_shape: [9, 84, 84]
+embed_dim: 128
+encoder:
+  latent_dim: 64
+  num_layers: 4
+  hidden_dim: 2048
+actor:
+  hidden_dim: 2048
+critic:
+  hidden_dim: 2048

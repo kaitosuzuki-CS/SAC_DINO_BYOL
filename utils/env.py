@@ -86,7 +86,35 @@ class FrameStackWrapper:
         )
 
 
-def create_environment(domain_name, task_name, action_repeat, frame_stack, image_size):
+class MaxEpisodeStepsWrapper:
+    def __init__(self, env, max_steps):
+        self._env = env
+        self._max_steps = max_steps
+
+        self.step_count = 0
+
+    def __getattr__(self, name):
+        return getattr(self._env, name)
+
+    def action_spec(self):
+        return self._env.action_spec()
+
+    def reset(self):
+        self.step_count = 0
+        return self._env.reset()
+
+    def step(self, action):
+        obs, reward, done, discount = self._env.step(action)
+        self.step_count += 1
+        if self.step_count >= self._max_steps:
+            done = True
+
+        return obs, reward, done, discount
+
+
+def create_environment(
+    domain_name, task_name, action_repeat, horizon, frame_stack, image_size
+):
     env = suite.load(domain_name=domain_name, task_name=task_name)
     env = ActionRepeatWrapper(env, action_repeat)
     env = pixels.Wrapper(
@@ -95,5 +123,6 @@ def create_environment(domain_name, task_name, action_repeat, frame_stack, image
         render_kwargs={"height": image_size, "width": image_size, "camera_id": 0},
     )
     env = FrameStackWrapper(env, num_frames=frame_stack)
+    # env = MaxEpisodeStepsWrapper(env, horizon)
 
     return env

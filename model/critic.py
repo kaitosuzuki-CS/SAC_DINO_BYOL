@@ -28,6 +28,7 @@ class SoftCritic(nn.Module):
 
     def forward(self, x, a):
         B, C, H, W = x.shape
+
         x = self.encoder(x)
 
         x = torch.cat([x, a], dim=-1)
