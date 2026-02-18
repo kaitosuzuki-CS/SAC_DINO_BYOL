@@ -123,6 +123,6 @@ def create_environment(
         render_kwargs={"height": image_size, "width": image_size, "camera_id": 0},
     )
     env = FrameStackWrapper(env, num_frames=frame_stack)
-    # env = MaxEpisodeStepsWrapper(env, horizon)
+    env = MaxEpisodeStepsWrapper(env, horizon)
 
     return env
