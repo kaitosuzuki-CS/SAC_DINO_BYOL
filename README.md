@@ -14,6 +14,7 @@ The project explores how auxiliary self-supervised tasks can help an RL agent le
 - [Application Info](#application-info)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
+  - [Clone the Repository](#clone-the-repository)
   - [Installation (Conda)](#installation-conda)
   - [Installation (Pip)](#installation-pip)
 - [Project Files](#project-files)
