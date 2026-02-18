@@ -93,8 +93,8 @@ _Note: Ensure the correct configuration files are provided or the defaults in `t
 ### Clone the Repository
 
   ```bash
-    git clone https://github.com/kaitosuzuki-CS/SAC_DINO_BYOL.git
-    cd SAC_DINO_BYOL
+  git clone https://github.com/kaitosuzuki-CS/SAC_DINO_BYOL.git
+  cd SAC_DINO_BYOL
   ```
 
 ### Installation (Conda)
